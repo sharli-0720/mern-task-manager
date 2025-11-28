@@ -1,0 +1,16 @@
+const mongoose = require("mongoose");
+
+const taskSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String },
+    status: {
+      type: String,
+      enum: ["pending", "in-progress", "completed"],
+      default: "pending",
+    },
+  },
+  { timestamps: true }  // FIX: Adds createdAt and updatedAt automatically
+);
+
+module.exports = mongoose.model("Task", taskSchema);
