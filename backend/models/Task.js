@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const taskSchema = new mongoose.Schema(
+const TaskSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String },
@@ -9,8 +9,13 @@ const taskSchema = new mongoose.Schema(
       enum: ["pending", "in-progress", "completed"],
       default: "pending",
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-  { timestamps: true }  // FIX: Adds createdAt and updatedAt automatically
+  { timestamps: true }
 );
 
-module.exports = mongoose.model("Task", taskSchema);
+module.exports = mongoose.model("Task", TaskSchema);

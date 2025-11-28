@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ connectDB();
 
 // Routes
 const taskRoutes = require("./routes/taskRoutes");
+app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
 // Start server
