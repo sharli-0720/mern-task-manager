@@ -16,7 +16,7 @@ router.post("/register", async (req, res) => {
 
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,13 +27,10 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    return res.status(201).json({
-      message: "User registered successfully",
-      user: { id: user._id, name: user.name, email: user.email },
-    });
+    res.status(201).json({ message: "User registered successfully", userId: user._id });
   } catch (err) {
     console.error("Register error:", err);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error during registration" });
   }
 });
 
@@ -58,17 +55,18 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || "secret",
       { expiresIn: "7d" }
     );
 
-    return res.json({
+    res.json({
+      message: "Login successful",
       token,
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error during login" });
   }
 });
 

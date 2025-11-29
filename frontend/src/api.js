@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://mern-backend-i4jgg.onrender.com/api",  // <-- important
+  baseURL: "https://mern-backend-i4jgg.onrender.com/api",
 });
 
-// Add token to each request if present
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
