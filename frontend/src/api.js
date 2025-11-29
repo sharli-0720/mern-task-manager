@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://mern-backend-i4jgg.onrender.com"
+  baseURL: "https://mern-backend-i4jgg.onrender.com/api",  // <-- add /api here
 });
 
 // Add token to each request if present
