@@ -12,22 +12,27 @@ dotenv.config();
 
 const app = express();
 
-// CORS – allow Netlify + localhost (and keep it simple)
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://profound-longma-ed6be0.netlify.app",
-    ],
-    credentials: true,
-  })
-);
+// -------- CORS CONFIG --------
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://profound-longma-ed6be0.netlify.app",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+// handle preflight OPTIONS requests so they don't 404
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 
-// Connect DB
+// -------- DB --------
 connectDB();
 
-// ---------- AUTH ROUTES DIRECTLY HERE ----------
+// -------- AUTH ROUTES --------
 
 // POST https://mern-backend-i4jgg.onrender.com/api/auth/register
 app.post("/api/auth/register", async (req, res) => {
@@ -100,9 +105,9 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-// ---------- TASK ROUTES (as before) ----------
+// -------- TASK ROUTES --------
 app.use("/api/tasks", taskRoutes);
 
-// Start server
+// -------- START SERVER --------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
