@@ -8,8 +8,13 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// ✅ CORS middleware (put it right after creating `app`)
+app.use(cors({
+  origin: "*",           // later replace "*" with your Vercel frontend URL
+  credentials: true
+}));
+
+// Parsing JSON
 app.use(express.json());
 
 // Connect DB
