@@ -21,9 +21,12 @@ function Register() {
     setError("");
 
     try {
-      await API.post("/auth/register", form);
+      const res = await API.post("/auth/register", form);
+      console.log("Register response:", res.data);
+      // after successful register, go to login page
       navigate("/login");
     } catch (err) {
+      console.error("Register error:", err);
       setError(err.response?.data?.message || "Registration failed");
     }
   };
@@ -85,6 +88,7 @@ function Register() {
 
             <p className="small mb-0 text-center">
               Already have an account?{" "}
+              {/* go to /login, not /auth/login */}
               <Link to="/login">Log in</Link>
             </p>
           </form>

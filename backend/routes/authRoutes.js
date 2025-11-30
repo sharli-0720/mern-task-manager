@@ -27,10 +27,14 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(201).json({ message: "User registered successfully", userId: user._id });
+    return res
+      .status(201)
+      .json({ message: "User registered successfully", userId: user._id });
   } catch (err) {
     console.error("Register error:", err);
-    res.status(500).json({ message: "Server error during registration" });
+    return res
+      .status(500)
+      .json({ message: "Server error during registration" });
   }
 });
 
@@ -40,7 +44,9 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password required" });
     }
 
     const user = await User.findOne({ email });
@@ -59,14 +65,14 @@ router.post("/login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({
+    return res.json({
       message: "Login successful",
       token,
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ message: "Server error during login" });
+    return res.status(500).json({ message: "Server error during login" });
   }
 });
 

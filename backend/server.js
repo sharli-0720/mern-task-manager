@@ -1,12 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
 const connectDB = require("./config/db");
-const User = require("./models/User");
 const taskRoutes = require("./routes/taskRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
@@ -16,7 +13,7 @@ const app = express();
 const corsOptions = {
   origin: [
     "http://localhost:3000",
-    "https://profound-longma-ed6be0.netlify.app",
+    "https://profound-longma-ed6be0.netlify.app", // your Netlify URL
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -24,7 +21,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// handle preflight OPTIONS requests so they don't 404
+// handle preflight OPTIONS requests
 app.options("*", cors(corsOptions));
 
 app.use(express.json());
@@ -32,81 +29,18 @@ app.use(express.json());
 // -------- DB --------
 connectDB();
 
-// -------- AUTH ROUTES --------
+// -------- ROUTES --------
 
-// POST https://mern-backend-i4jgg.onrender.com/api/auth/register
-app.post("/api/auth/register", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+// all auth routes start with /api/auth
+app.use("/api/auth", authRoutes);
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const existing = await User.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    return res
-      .status(201)
-      .json({ message: "User registered successfully", userId: user._id });
-  } catch (err) {
-    console.error("Register error:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error during registration" });
-  }
-});
-
-// POST https://mern-backend-i4jgg.onrender.com/api/auth/login
-app.post("/api/auth/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET || "secret",
-      { expiresIn: "7d" }
-    );
-
-    return res.json({
-      message: "Login successful",
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
-    });
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).json({ message: "Server error during login" });
-  }
-});
-
-// -------- TASK ROUTES --------
+// all task routes start with /api/tasks
 app.use("/api/tasks", taskRoutes);
+
+// basic health check route (optional, but helps debugging)
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
 
 // -------- START SERVER --------
 const PORT = process.env.PORT || 5000;

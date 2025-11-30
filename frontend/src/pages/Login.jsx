@@ -21,10 +21,15 @@ function Login() {
 
     try {
       const res = await API.post("/auth/login", form);
+      console.log("Login response:", res.data);
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userName", res.data.user.name);
+
+      // go to dashboard/home
       navigate("/");
     } catch (err) {
+      console.error("Login error:", err);
       setError(err.response?.data?.message || "Login failed");
     }
   };
@@ -72,7 +77,8 @@ function Login() {
             </button>
 
             <p className="small mb-0 text-center">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
+              {/* go to /register, not /auth/register */}
               <Link to="/register">Sign up</Link>
             </p>
           </form>
