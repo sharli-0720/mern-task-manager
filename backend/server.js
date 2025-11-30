@@ -12,19 +12,8 @@ dotenv.config();
 
 const app = express();
 
-// -------- CORS (allow Netlify + local) --------
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://profound-longma-ed6be0.netlify.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
+// -------- SIMPLE CORS (allow all origins) --------
+app.use(cors()); // this will add Access-Control-Allow-Origin: * for you
 app.use(express.json());
 
 // -------- DB --------
