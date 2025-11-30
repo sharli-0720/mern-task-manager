@@ -20,9 +20,11 @@ const corsOptions = {
   credentials: true,
 };
 
+// enable CORS for all routes
 app.use(cors(corsOptions));
-// handle preflight OPTIONS requests
-app.options("*", cors(corsOptions));
+
+// ❌ REMOVE THIS — it was crashing Render
+// app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
