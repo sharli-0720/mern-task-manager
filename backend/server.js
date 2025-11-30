@@ -12,18 +12,33 @@ dotenv.config();
 
 const app = express();
 
-// -------- SIMPLE CORS (allow all for now) --------
-app.use(cors()); // later we can restrict to Netlify URL
+// -------- CORS (allow Netlify + local) --------
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://profound-longma-ed6be0.netlify.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
 // -------- DB --------
 connectDB();
 
-// -------- AUTH ROUTES DIRECTLY HERE --------
+// -------- DEBUG ROUTE --------
+app.get("/api/debug", (req, res) => {
+  console.log("DEBUG hit");
+  res.json({ ok: true });
+});
 
-// POST /api/auth/register
+// -------- AUTH ROUTES --------
 app.post("/api/auth/register", async (req, res) => {
+  console.log("Register hit with body:", req.body);
   try {
     const { name, email, password } = req.body;
 
@@ -55,8 +70,8 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// POST /api/auth/login
 app.post("/api/auth/login", async (req, res) => {
+  console.log("Login hit with body:", req.body);
   try {
     const { email, password } = req.body;
 
@@ -99,6 +114,12 @@ app.use("/api/tasks", taskRoutes);
 // -------- HEALTH CHECK --------
 app.get("/", (req, res) => {
   res.send("API is running");
+});
+
+// -------- GLOBAL ERROR HANDLER (extra safety) --------
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ message: "Unexpected server error" });
 });
 
 // -------- START SERVER --------
