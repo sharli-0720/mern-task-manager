@@ -21,8 +21,10 @@ function Register() {
     setError("");
 
     try {
-      const res = await API.post("/auth/register", form);
-      console.log("Register response:", res.data);
+      const res = await API.post("/api/auth/register", form);
+
+
+    console.log("Register response:", res.data);
       // after successful register, go to login page
       navigate("/login");
     } catch (err) {

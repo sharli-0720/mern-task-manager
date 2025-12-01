@@ -28,10 +28,13 @@ function Dashboard() {
 
   const fetchTasks = async () => {
     try {
-      const res = await API.get("/tasks");
+      const res = await API.get("/tasks"); // -> http://localhost:5000/api/tasks
       setTasks(res.data);
     } catch (error) {
-      console.error("Error fetching tasks", error);
+      console.error(
+        "Error fetching tasks",
+        error.response?.data || error.message
+      );
     }
   };
 
@@ -41,37 +44,44 @@ function Dashboard() {
 
   const handleAdd = async (data) => {
     try {
-      await API.post("/tasks", data);
+      await API.post("/tasks", data); // -> POST /api/tasks
       await fetchTasks();
     } catch (error) {
-      console.error("Error adding task", error);
+      console.error(
+        "Error adding task",
+        error.response?.data || error.message
+      );
     }
   };
 
   const handleUpdate = async (id, data) => {
     try {
-      await API.put(`/tasks/${id}`, data);
+      await API.put(`/tasks/${id}`, data); // -> PUT /api/tasks/:id
       setEditingTask(null);
       await fetchTasks();
     } catch (error) {
-      console.error("Error updating task", error);
+      console.error(
+        "Error updating task",
+        error.response?.data || error.message
+      );
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await API.delete(`/tasks/${id}`);
+      await API.delete(`/tasks/${id}`); // -> DELETE /api/tasks/:id
       await fetchTasks();
     } catch (error) {
-      console.error("Error deleting task", error);
+      console.error(
+        "Error deleting task",
+        error.response?.data || error.message
+      );
     }
   };
 
   const completedCount = tasks.filter((t) => t.status === "completed").length;
   const pendingCount = tasks.filter((t) => t.status === "pending").length;
-  const inProgressCount = tasks.filter(
-    (t) => t.status === "in-progress"
-  ).length;
+  const inProgressCount = tasks.filter((t) => t.status === "in-progress").length;
 
   const userName = localStorage.getItem("userName") || "User";
 
@@ -131,7 +141,9 @@ function Dashboard() {
           </div>
           <div className="col-md-4 mt-3 mt-md-0">
             <div className="d-flex gap-2 justify-content-md-end">
-              <span className="badge bg-success">Completed: {completedCount}</span>
+              <span className="badge bg-success">
+                Completed: {completedCount}
+              </span>
               <span className="badge bg-warning text-dark">
                 In progress: {inProgressCount}
               </span>

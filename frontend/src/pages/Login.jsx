@@ -20,7 +20,8 @@ function Login() {
     setError("");
 
     try {
-      const res = await API.post("/auth/login", form);
+      const res = await API.post("/api/auth/login", form); // add /api here
+
       console.log("Login response:", res.data);
 
       localStorage.setItem("token", res.data.token);

@@ -1,24 +1,26 @@
+// backend/routes/taskRoutes.js
 const express = require("express");
 const Task = require("../models/Task");
 const auth = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// 🔐 All task routes are protected
+// 🔐 all routes below require login
 router.use(auth);
 
 /**
- * CREATE TASK
- * POST /api/tasks
+ * CREATE TASK   POST /api/tasks
  */
 router.post("/", async (req, res) => {
   try {
     const task = await Task.create({
-      ...req.body,
-      userId: req.userId, // attach logged-in user's ID
+      title: req.body.title,
+      description: req.body.description || "",
+      status: req.body.status || "pending",
+      userId: req.userId, // ✅ from authMiddleware
     });
 
-    res.json(task);
+    res.status(201).json(task);
   } catch (err) {
     console.error("Create task error:", err);
     res.status(500).json({ message: "Server error" });
@@ -26,12 +28,13 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * GET ALL TASKS FOR LOGGED-IN USER
- * GET /api/tasks
+ * GET TASKS FOR LOGGED-IN USER   GET /api/tasks
  */
 router.get("/", async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.userId }).sort({ createdAt: -1 });
+    const tasks = await Task.find({ userId: req.userId }).sort({
+      createdAt: -1,
+    });
     res.json(tasks);
   } catch (err) {
     console.error("Get tasks error:", err);
@@ -40,13 +43,12 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * UPDATE TASK (only if it belongs to the user)
- * PUT /api/tasks/:id
+ * UPDATE TASK   PUT /api/tasks/:id
  */
 router.put("/:id", async (req, res) => {
   try {
     const updated = await Task.findOneAndUpdate(
-      { _id: req.params.id, userId: req.userId }, // restrict to owner
+      { _id: req.params.id, userId: req.userId },
       req.body,
       { new: true }
     );
@@ -63,8 +65,7 @@ router.put("/:id", async (req, res) => {
 });
 
 /**
- * DELETE TASK (only if it belongs to the user)
- * DELETE /api/tasks/:id
+ * DELETE TASK   DELETE /api/tasks/:id
  */
 router.delete("/:id", async (req, res) => {
   try {
