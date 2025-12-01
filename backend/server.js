@@ -9,24 +9,23 @@ dotenv.config();
 
 const app = express();
 
-// CORS – allow all (localhost + Netlify)
+// CORS – allow all origins (Netlify + localhost)
 app.use(
   cors({
-    origin: "*",        // ✅ simple, works for localhost + production
+    origin: "*",
   })
 );
 
-// Parse JSON body
+// body parser
 app.use(express.json());
 
-// Connect DB
+// DB
 connectDB();
 
-// Routes
+// routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
-// Test route
 app.get("/", (req, res) => {
   res.send("API running");
 });
